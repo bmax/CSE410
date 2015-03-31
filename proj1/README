@@ -1,0 +1,7 @@
+Student NetID: maxbrand, I am working with scherrda.
+Responsibilities: 
+          scherrda worked on Interval, Threshold, and SIGINT.
+          maxbrand worked on Quit, Kill, Continue, and SIGAlRM.
+          Kill_receiver, and alarm_handler tasks were shared equally.
+Compilation tested on: carl, ned, marge, and skinner.
+Command for compile: make
