@@ -187,7 +187,7 @@ int insertion_sort(int startIndex, int endIndex, string keyword, vector<int>& v)
     for (int i = 1; i <= length; i++){
       j = i;
       if (dataSet[j]->stateName == keyword) freq++;
-      while (j > 0 && compareRecords(j, j-1, v) == 0) {
+      while (j > startIndex && compareRecords(j, j-1, v) == 0) {
         swap(j,j-1);
         j--;
       }
