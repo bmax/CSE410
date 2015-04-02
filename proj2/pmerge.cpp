@@ -277,7 +277,7 @@ void * mergesort(void *arg)
   retVal* rVal = aList->rVal;
   struct timeval now, later;
   gettimeofday(&now, NULL);
-  rVal->frequency = 1;
+  rVal->frequency = 0;
 
   if (sortlength > threshold)
   {
@@ -289,7 +289,6 @@ void * mergesort(void *arg)
       cout << " unable to create thread " <<__FUNCTION__ << endl;
     }
     pthread_join(sorterThread, NULL);
-    rVal->frequency += insertion_sort(ending/2+1, ending, kw, aList->criteria);  
     merge(starting,ending/2,ending/2+1,ending, aList->criteria);
   }
   rVal->frequency += insertion_sort(starting, ending, kw, aList->criteria);
