@@ -37,39 +37,38 @@ string attributeList[] = {"id", "gender","firstname", "middlename", "lastname", 
 int compareRecords( int index1, int index2, vector<int> &v)
 {
   /* fill in code here to compare records, make sure to compare the records on attributes in order */
+  int ret = -1;
   for (int i : v)
   {
-    int ret = 0;
     switch (i)
     {
       case 0:
-        ret = dataSet[index1]->eid > dataSet[index2]->eid;
+          ret = dataSet[index1]->eid > dataSet[index2]->eid;
         break;
       case 1:
-        ret =  dataSet[index1]->gender > dataSet[index2]->gender;
+          ret =  dataSet[index1]->gender > dataSet[index2]->gender;
         break;
       case 2:
-        ret =  dataSet[index1]->firstName > dataSet[index2]->firstName;
+          ret =  dataSet[index1]->firstName > dataSet[index2]->firstName;
         break;
       case 3:
-        ret =  dataSet[index1]->middleName > dataSet[index2]->middleName;
+          ret =  dataSet[index1]->middleName > dataSet[index2]->middleName;
         break;
       case 4:
-        ret =  dataSet[index1]->lastName > dataSet[index2]->lastName;
+          ret =  dataSet[index1]->lastName > dataSet[index2]->lastName;
         break;
       case 5:
-        ret =  dataSet[index1]->cityName > dataSet[index2]->cityName;
+          ret =  dataSet[index1]->cityName > dataSet[index2]->cityName;
         break;
       case 6:
-        ret =  dataSet[index1]->stateName > dataSet[index2]->stateName;
+          ret =  dataSet[index1]->stateName > dataSet[index2]->stateName;
         break;
       case 7:
-        ret =  dataSet[index1]->ssNumber > dataSet[index2]->ssNumber;
+          ret =  dataSet[index1]->ssNumber > dataSet[index2]->ssNumber;
         break;
     }
-    return ret;
   }
-  return 0;
+  return ret;
 }
 
 /*
@@ -83,7 +82,7 @@ void swap(int index1, int index2)
 {
   employeeRecord* t 	= dataSet[index1];
   dataSet[index1]	  	= dataSet[index2];
-  dataSet[index2]        	= t;	
+  dataSet[index2]    	= t;	
 }
 
 
@@ -184,7 +183,7 @@ int insertion_sort(int startIndex, int endIndex, string keyword, vector<int>& v)
     int length = endIndex-startIndex; 
     int j,i;
 
-    for (int i = 1; i <= length; i++){
+    for (int i = startIndex; i <= endIndex; i++){
       j = i;
       if (dataSet[j]->stateName == keyword) freq++;
       while (j > startIndex && compareRecords(j, j-1, v) == 0) {
@@ -282,16 +281,22 @@ void * mergesort(void *arg)
   if (sortlength > threshold)
   {
     retVal *rVal2 = new retVal();
+    retVal *rVal3 = new retVal();
+    pthread_t sorterThread2;
     pthread_t sorterThread;
-    argList mergeArgList(starting, ending/2, kw, ++threadno, threshold, aList->criteria, rVal2);
+    argList mergeArgList(starting, starting+(sortlength)/2, kw, ++threadno, threshold, aList->criteria, rVal2);
     int ret = pthread_create(&sorterThread, NULL, mergesort, (void *)&mergeArgList);
-    if(ret){
-      cout << " unable to create thread " <<__FUNCTION__ << endl;
-    }
+    argList mergeArgList2(starting+((sortlength)/2)+1, ending, kw, ++threadno, threshold, aList->criteria, rVal3);
+    ret = pthread_create(&sorterThread2, NULL, mergesort, (void *)&mergeArgList2);
     pthread_join(sorterThread, NULL);
-    merge(starting,ending/2,ending/2+1,ending, aList->criteria);
+    pthread_join(sorterThread2, NULL);
+    rVal->frequency += rVal2->frequency + rVal3->frequency;
+    merge(starting,starting+(sortlength)/2,starting+((sortlength)/2)+1,ending, aList->criteria);
   }
-  rVal->frequency += insertion_sort(starting, ending, kw, aList->criteria);
+  else
+  {
+    rVal->frequency += insertion_sort(starting, ending, kw, aList->criteria);
+  }
   // change the system state
 
   pthread_mutex_lock(&mut);
@@ -457,17 +462,9 @@ int main(int argc, char **argv)
 
   // add codes to clean the allocated memory
   pthread_join(readerThread, NULL);
-  for (int i = 0; i <= dataSet.size()-1; i++){
-    cout << setprecision(3) << dataSet[i]->eid         << setw(10) << dataSet[i]->gender
-      << setw(20)        << dataSet[i]->firstName
-      << setw(5)         << dataSet[i]->middleName  << setw(20) << dataSet[i]->lastName
-      << setw(20)        << dataSet[i]->cityName    << setw(20) << dataSet[i]->stateName
-      << setw(20)        << dataSet[i]->ssNumber  << endl;
-  }
-  cout << endl;
   if (rVal1)
   {
-    cout << "Read Data: " <<endl << "\t\tFrequency: "<< rVal1->frequency << endl << "\t\tTime Used: "<<rVal1->timeUsed<<endl;
+    cout << "Total CPU Time for reading : " << rVal1->timeUsed << " microseconds"<<endl;
   }
   argList mergeArgList(0, dataSet.size()-1, keyword, 0, minSize, criteria, rVal2);
   ret = pthread_create(&sorterThread, NULL, mergesort, (void *)&mergeArgList);
@@ -477,7 +474,7 @@ int main(int argc, char **argv)
   pthread_join(sorterThread, NULL);
   if (rVal2)
   {
-    cout << "Sort Data: " << endl << "\t\tFrequency: "<< rVal2->frequency << endl << "\t\tTime Used: "<<rVal2->timeUsed<<endl;
+    cout << "Total CPU Time for sorting : " << rVal2->timeUsed << " microseconds"<<endl;
   }
 
   argListforRW writeArgList(outputFile, rVal3);
@@ -488,8 +485,11 @@ int main(int argc, char **argv)
   pthread_join(writerThread, NULL);
   if (rVal3)
   {
-    cout << "Write Data: " <<endl << "\t\tFrequency: "<< rVal3->frequency << endl << "\t\tTime Used: "<<rVal3->timeUsed<<endl;
+    cout << "Total CPU Time for writing: " << rVal3->timeUsed << " microseconds"<<endl;
   }
+if (rVal2) {
+  cout << "Keyword found: " << rVal2->frequency << endl;
+}
 
   pthread_cond_destroy(&con);
   pthread_mutex_destroy(&mut);
