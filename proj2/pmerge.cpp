@@ -24,16 +24,16 @@ string attributeList[] = {"id", "gender","firstname", "middlename", "lastname", 
 
 
 /*
-   function name - compareRecords 
-   task - compares employee at index1 with employee at index2 based on attributes in v 
-   arguments - 
-   index1 - index in the dataset 
+   function name - compareRecords
+   task - compares employee at index1 with employee at index2 based on attributes in v
+   arguments -
+   index1 - index in the dataset
    index2 - index in the dataset
-   v      - sorting attributes	
+   v      - sorting attributes
    output -
-   1 - if employee of index1 is greater than employee of index2 
+   1 - if employee of index1 is greater than employee of index2
    0 - otherwise
-   */	
+   */
 int compareRecords( int index1, int index2, vector<int> &v)
 {
   /* fill in code here to compare records, make sure to compare the records on attributes in order */
@@ -73,7 +73,7 @@ int compareRecords( int index1, int index2, vector<int> &v)
 
 /*
    function name - swap
-   task - swaps two pointers 
+   task - swaps two pointers
    arguments -
    index1, index2
    output - none
@@ -82,7 +82,7 @@ void swap(int index1, int index2)
 {
   employeeRecord* t 	= dataSet[index1];
   dataSet[index1]	  	= dataSet[index2];
-  dataSet[index2]    	= t;	
+  dataSet[index2]    	= t;
 }
 
 
@@ -122,7 +122,7 @@ void* writeData(void * arg)
 
   // read the argument
 
-  argListforRW* aList = static_cast<argListforRW*> (arg);	
+  argListforRW* aList = static_cast<argListforRW*> (arg);
   string fileName = aList->fileName;
   int starting = 0;
   int ending   = dataSet.size()-1;
@@ -136,10 +136,10 @@ void* writeData(void * arg)
   if(ofile.is_open()){
     stringstream ss;
     for (int i = starting; i <= ending; i++){
-      ss   << setprecision(3) << dataSet[i]->eid         << setw(10) << dataSet[i]->gender 
-        << setw(20)        << dataSet[i]->firstName 
-        << setw(5)         << dataSet[i]->middleName  << setw(20) << dataSet[i]->lastName  
-        << setw(20)        << dataSet[i]->cityName    << setw(20) << dataSet[i]->stateName 	
+      ss   << setprecision(3) << dataSet[i]->eid         << setw(10) << dataSet[i]->gender
+        << setw(20)        << dataSet[i]->firstName
+        << setw(5)         << dataSet[i]->middleName  << setw(20) << dataSet[i]->lastName
+        << setw(20)        << dataSet[i]->cityName    << setw(20) << dataSet[i]->stateName
         << setw(20)        << dataSet[i]->ssNumber  << endl;
     }
 
@@ -176,11 +176,11 @@ void* writeData(void * arg)
 int insertion_sort(int startIndex, int endIndex, string keyword, vector<int>& v)
 {
   // if statrIndex > endIndex return 0
-  // otherwise, write code to simultaneously search the keyword and sort the records between startIndex and endIndex using insertion sort	
+  // otherwise, write code to simultaneously search the keyword and sort the records between startIndex and endIndex using insertion sort
   int freq = 0;
   if (startIndex <= endIndex)
   {
-    int length = endIndex-startIndex; 
+    int length = endIndex-startIndex;
     int j,i;
 
     for (int i = startIndex; i <= endIndex; i++){
@@ -192,7 +192,7 @@ int insertion_sort(int startIndex, int endIndex, string keyword, vector<int>& v)
       }
     }
   }
-  return freq;		
+  return freq;
 }
 
 /*
@@ -200,10 +200,10 @@ int insertion_sort(int startIndex, int endIndex, string keyword, vector<int>& v)
    task - merges two sorted arrays at index i and at index j into one sorted list, i < j
    arguments -
    i, mid  - start and end index of the first sorted array in the dataset
-   bi,  j  - start and end index of the second sorted array in the dataset 
+   bi,  j  - start and end index of the second sorted array in the dataset
    v - sorting attributes
    output - none
-   */ 
+   */
 void merge(int i, int mid, int bi, int j, vector <int>& v)
 {
 
@@ -213,7 +213,7 @@ void merge(int i, int mid, int bi, int j, vector <int>& v)
   while(ai <= mid && bi <= j) {
     if (compareRecords(ai, bi, v))
       tempList.push_back(dataSet[bi++]);
-    else                    
+    else
       tempList.push_back(dataSet[ai++]);
   }
 
@@ -240,12 +240,12 @@ void merge(int i, int mid, int bi, int j, vector <int>& v)
    */
 void * mergesort(void *arg)
 {
-  // wait for reader to finish and then change the system state, if the abort status is set, exit the thread 
+  // wait for reader to finish and then change the system state, if the abort status is set, exit the thread
   // if the number of records to be sorted is below the threshold, simply call insertion sort
-  // otherwise, 
+  // otherwise,
   // 	we need to create one thread and assign it to sort half the records
   // 	set up thread attributes, create the thread, and pass arguments to the child thread
-  //	sort other half by calling insertion sort 
+  //	sort other half by calling insertion sort
   //	wait for the child thread to finish
   //	merge the results from its child threads
 
@@ -266,13 +266,13 @@ void * mergesort(void *arg)
 
   // read the argument
 
-  argList* aList = static_cast<argList*> (arg);	
+  argList* aList = static_cast<argList*> (arg);
   int starting = aList->startIndex;
-  int ending   = aList->endIndex; 
-  int threshold = aList->minSize; 
+  int ending   = aList->endIndex;
+  int threshold = aList->minSize;
   int sortlength = ending-starting;
-  string kw = aList->keyword; 
-  int threadno = aList->threadno; 
+  string kw = aList->keyword;
+  int threadno = aList->threadno;
   retVal* rVal = aList->rVal;
   struct timeval now, later;
   gettimeofday(&now, NULL);
@@ -347,7 +347,7 @@ void * readData(void *arg)
       while(getline(iss, str, ',')){
         record.push_back(str);
 
-      }	
+      }
       employeeRecord* eR = new employeeRecord(record);
       dataSet.push_back(eR);
     }
@@ -427,7 +427,7 @@ int validateParams(int argc, char** argv, char* inputFile, char* outputFile, str
 
 /*
    function name - main
-   task - takes the user input, creates threads, and waits for the threads to finish the tasks 
+   task - takes the user input, creates threads, and waits for the threads to finish the tasks
    programname input_file_name output_file_name keyword minsize criteria
    0 - id, 1 - gender, 2 - firstname, 3 - middlename, 4 - lastname, 5 - cityname, 6 - statename, 7 - ssn
    */
