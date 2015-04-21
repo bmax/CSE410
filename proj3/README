@@ -1,0 +1,16 @@
+Student NetID: maxbrand.
+Responsibilities: 
+             I did it all myself
+Compilation tested on: ned.
+Command for compile: make
+Command for run: ./bizzaro <directory_path>
+
+Sample output: ./bizzaro testdir
+
+dir: testdir
+    fil2.txt
+    file1
+dir: testdir/newdir
+    test.txt
+Successful
+
